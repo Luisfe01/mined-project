@@ -3,7 +3,7 @@ window.onpageshow = function(event) {
         window.location.reload();
     }
 };
-const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://sever/api/'
+const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://mined-project-production.up.railway.app/api/'
 
 let usuario = null;
 

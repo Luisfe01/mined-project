@@ -4,7 +4,7 @@ window.onpageshow = function (event) {
     }
 };
 
-const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://server/api/'
+const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://mined-project-production.up.railway.app/api/'
 let table;
 let user = null;
 
