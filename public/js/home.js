@@ -128,7 +128,7 @@ const iniciar = (id, docente_id) => {
         return;
     }
 
-    fetch(`http://localhost:8080/api/evaluaciones`, {
+    fetch(url+`evaluaciones`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {'Content-Type': 'application/json',"x-token": localStorage.getItem('token')}

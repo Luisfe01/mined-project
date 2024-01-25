@@ -350,7 +350,7 @@ const calificar = async(idevaluacion, idtestdetail, grado) => {
             observaciones: $(`input[name=obsP${q}]`).val()
         }
 
-        fetch(`http://localhost:8080/api/evaluaciondetalle`, {
+        fetch(url+`evaluaciondetalle`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {'Content-Type': 'application/json'}
@@ -392,7 +392,7 @@ const calificar = async(idevaluacion, idtestdetail, grado) => {
         estado: "F"
     }
 
-    fetch(`http://localhost:8080/api/evaluaciones/`+idevaluacion, {
+    fetch(url+`evaluaciones/`+idevaluacion, {
     method: 'PUT',
     body: JSON.stringify(info),
     headers: {'Content-Type': 'application/json'}
