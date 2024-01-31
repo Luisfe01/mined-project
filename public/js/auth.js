@@ -49,7 +49,7 @@ const validarJWT = async() => {
 
     //Renovar token
     localStorage.setItem('token', tokenDB)
-    window.location = 'index.html'
+    window.location = 'home.html'
 }
 
 const main = async () => {

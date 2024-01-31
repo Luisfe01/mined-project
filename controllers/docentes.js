@@ -61,6 +61,17 @@ const docentesPost = async (req, res) => {
 const docenteCargosPost = async (req, res) => {
     const {body} = req;
     try {
+
+        const val = await Docente.sequelize.query("SELECT * FROM docente_cargos WHERE docente_id = :docente_id AND grado_id = :grado_id AND seccion_id = :seccion_id", {
+            replacements: body,
+            type: QueryTypes.SELECT
+        })
+
+        if (val.length > 0) {
+            return res.status(400).json({
+                errors: [{msg:"Ya existe el registro"}]
+            })
+        }
         
         const cargo = await Docente.sequelize.query("INSERT INTO docente_cargos(docente_id, grado_id, seccion_id) VALUES (:docente_id, :grado_id, :seccion_id)", {
             replacements: body,

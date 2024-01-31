@@ -17,7 +17,7 @@ const validarJWT = async() => {
     const token = localStorage.getItem('token') || ''
 
     if (token.length <= 10) {
-        window.location = 'login.html'
+        window.location = 'index.html'
         throw new Error('No hay token en el servidor')        
     }
 
@@ -163,7 +163,7 @@ const iniciar = (id, docente_id) => {
 
 const salir = () => {
     localStorage.removeItem('token');
-    window.location = 'login.html'
+    window.location = 'index.html'
 }
 
 const addGrado = () => {

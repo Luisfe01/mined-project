@@ -102,7 +102,7 @@ const main = async () => {
 
 const salir = () => {
     localStorage.removeItem('token');
-    window.location = 'login.html'
+    window.location = 'index.html'
 }
 
 main()
