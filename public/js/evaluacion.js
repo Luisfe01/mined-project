@@ -409,7 +409,7 @@ const calificar = async(idevaluacion, idtestdetail, grado) => {
             icon: 'success',
             confirmButtonText: 'Aceptar'
         }).then((result) => {
-            window.location = 'index.html'
+            window.location = 'home.html'
         })
     })
     .catch( err => {
@@ -500,7 +500,7 @@ const main = async () => {
 
 const salir = () => {
     localStorage.removeItem('token');
-    window.location = 'home.html'
+    window.location = 'index.html'
 }
 
 main()
