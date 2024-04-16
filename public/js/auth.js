@@ -26,7 +26,7 @@ miFormulario.addEventListener('submit', ev => {
             return;
         }
         localStorage.setItem('token', token)
-        window.location = 'index.html'
+        window.location = 'home.html'
     })
     .catch( err => {
         console.log(err);

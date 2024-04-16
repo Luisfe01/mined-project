@@ -500,7 +500,7 @@ const main = async () => {
 
 const salir = () => {
     localStorage.removeItem('token');
-    window.location = 'index.html'
+    window.location = 'home.html'
 }
 
 main()
