@@ -253,10 +253,10 @@ const handleChange = (total, test) => {
         }
     }
     
-    if (contadorCorrectas >= Math.ceil(total*0.5)) {
-        result = "Aceptable"
+    if ((total % 2 == 1 && contadorCorrectas >= Math.ceil(total * 0.5)) || (total % 2 == 0 && contadorCorrectas > Math.ceil(total * 0.5))) {
+        result = "Aceptable";
     } else {
-        result = "Por mejorar"
+        result = "Por mejorar";
     }
 
     $("#R"+test).html(result)
@@ -309,10 +309,10 @@ const calificar = async(ids) => {
                 count++
             }
         }
-        if (count >= Math.ceil(total*0.5)) {
-            result = "Aceptable"
+        if ((total % 2 == 1 && count >= Math.ceil(total * 0.5)) || (total % 2 == 0 && count > Math.ceil(total * 0.5))) {
+            result = "Aceptable";
         } else {
-            result = "Por mejorar"
+            result = "Por mejorar";
         }
         
         const info = {
