@@ -280,7 +280,7 @@ const evaluacionGet = async (req, res = response) => {
 const evaluacionbyAlumnoGet = async (req, res = response) => {
     const id = req.params.id;
 
-    const evaluacion = await Evaluacione.sequelize.query("SELECT CONCAT(al.nombres, ' ', al.apellidos) AS alumno, al.fecha_nacimiento, t.test_name, e.*, al.grado_id FROM evaluaciones e INNER JOIN docentes d ON d.id = e.docente_id INNER JOIN alumnos al ON al.id = e.alumno_id INNER JOIN tests t ON t.id = e.test_id WHERE al.id = :id AND e.estado = 'A'", {
+    const evaluacion = await Evaluacione.sequelize.query("SELECT CONCAT(al.nombres, ' ', al.apellidos) AS alumno, al.fecha_nacimiento, t.test_name, e.*, al.grado_id FROM evaluaciones e INNER JOIN docentes d ON d.id = e.docente_id INNER JOIN alumnos al ON al.id = e.alumno_id INNER JOIN tests t ON t.id = e.test_id WHERE al.id = :id AND e.estado = 'A' ORDER BY t.id ASC", {
         replacements: { id },
         type: QueryTypes.SELECT
     })

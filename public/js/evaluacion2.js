@@ -58,7 +58,9 @@ const loadInfo = async(docente) => {
     $("#test_name").html(`<span>Evaluacion 1er Grado</span>`)
 
     $("#btnFinalizar").html(`<button class="btn btn-danger" onclick="calificar('${ids_eva.join()}')">Finalizar</button>`)
-    await eva.forEach(async eva_id => {
+    
+    for (const eva_id of eva) {
+    
         
         const resp = await fetch(url+'evaluaciones/'+eva_id.id, {
             headers: {"x-token": 'token'}
@@ -201,7 +203,7 @@ const loadInfo = async(docente) => {
         <hr>
         `
         $("#cardBody").append(main_content)
-    })
+    }
 
     
 }
