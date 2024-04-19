@@ -1,5 +1,5 @@
 const {Router} = require('express');
-const { evaluacionesGet, evaluacionGet, evaluacionesPut, evaluacionesPost, evaluacionesDelete, evaluacionesResultGet, pdf } = require('../controllers/evaluaciones');
+const { evaluacionesGet, evaluacionGet, evaluacionesPut, evaluacionesPost, evaluacionesDelete, evaluacionesResultGet, pdf, evaluacionbyAlumnoGet } = require('../controllers/evaluaciones');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { check } = require('express-validator');
 
@@ -10,6 +10,7 @@ router.get('/resultados', evaluacionesResultGet);
 router.get('/resultados/pdf', pdf);
 
 router.get('/:id', evaluacionGet);
+router.get('/alumn/:id', evaluacionbyAlumnoGet);
 
 router.put('/:id', evaluacionesPut);
 

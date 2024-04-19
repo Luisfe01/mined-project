@@ -6,13 +6,6 @@ window.onpageshow = function(event) {
 
 const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://mined-project-production.up.railway.app/api/'
 
-let usuario = null;
-
-// Referencias HTML
-const txtUser = $('#txtuser');
-const container = $('#maincontainer');
-
-
 // Validar el token del localStorage 
 const validarJWT = async() => {
     const token = localStorage.getItem('token') || ''
@@ -197,7 +190,7 @@ const loadInfo = async(docente) => {
 
     const info =  evaluacion[0]
     if (info.estado === 'F') {
-        window.location = 'index.html'
+        window.location = 'home.html'
     }
 
 
@@ -418,7 +411,6 @@ const calificar = async(idevaluacion, idtestdetail, grado) => {
 }
 
 const contador = (inicio) => {
-    //Contador desde el registro de la habitacion
     let StartContador = new Date(inicio);
     let StartStamp = StartContador.getTime();
 

@@ -25,8 +25,8 @@ const evaluacionesGet = async (req, res = response) => {
 }
 
 const evaluacionesResultGet = async (req, res = response) => {
-    const { test_id = 1, grado_id = 6, seccion_id = 1, institucion_id } = req.query
-
+    const { test_id, grado_id, seccion_id, institucion_id } = req.query
+    console.log(test_id);
     const evaluaciones = await Evaluacione.sequelize.query("select e.id, a.nie, a.genero, CONCAT(a.nombres, ' ', a.apellidos) AS alumno, a.fecha_nacimiento, CONCAT(a.grado_id, ' \"', sc.seccion,'\"') AS grado, e.resultado, e.createdAt from evaluaciones e INNER JOIN tests t ON e.test_id = t.id INNER JOIN alumnos a ON a.id = e.alumno_id INNER JOIN secciones sc ON sc.id = a.seccion_id WHERE a.grado_id = :grado_id AND a.seccion_id = :seccion_id AND test_id = :test_id AND e.Estado != 'A' AND a.institucion_id = :institucion_id", {
         replacements: { grado_id, seccion_id, test_id, institucion_id },
         type: QueryTypes.SELECT
@@ -277,6 +277,24 @@ const evaluacionGet = async (req, res = response) => {
     }
 }
 
+const evaluacionbyAlumnoGet = async (req, res = response) => {
+    const id = req.params.id;
+
+    const evaluacion = await Evaluacione.sequelize.query("SELECT CONCAT(al.nombres, ' ', al.apellidos) AS alumno, al.fecha_nacimiento, t.test_name, e.*, al.grado_id FROM evaluaciones e INNER JOIN docentes d ON d.id = e.docente_id INNER JOIN alumnos al ON al.id = e.alumno_id INNER JOIN tests t ON t.id = e.test_id WHERE al.id = :id AND e.estado = 'A'", {
+        replacements: { id },
+        type: QueryTypes.SELECT
+    })
+    if (evaluacion.length <= 0) {
+        res.status(404).json({ err: [{ msg: "no se encontro la evaluacion" }] })
+    } else {
+        const diff = new Date(evaluacion[0].createdAt).getTime() - new Date(evaluacion[0].fecha_nacimiento).getTime()
+        const years = (diff / (1000 * 60 * 60 * 24)) / 365;
+        evaluacion[0].years = parseInt(years, 10);
+
+        res.json({ eva: evaluacion })
+    }
+}
+
 const evaluacionesPost = async (req, res) => {
     const { body } = req;
     try {
@@ -347,6 +365,7 @@ module.exports = {
     evaluacionesGet,
     evaluacionesResultGet,
     evaluacionGet,
+    evaluacionbyAlumnoGet,
     evaluacionesPost,
     evaluacionesPut,
     evaluacionesDelete,

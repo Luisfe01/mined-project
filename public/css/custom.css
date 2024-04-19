@@ -1,3 +1,45 @@
-.sidebar{
-    background-color: #8C92AC;
+.wrap {
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1.5px solid #fcaf2d;
+    margin-bottom: 0;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    border-style: hidden;
+
+    width: 100%;
+    max-width: 100%;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1.5px solid #fcaf2d;
+}
+
+th {
+    background-color: #ffe3bc;
+}
+
+tfoot,
+p {
+    padding: 0;
+    margin: 0;
+}
+.tdb {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.bor {
+    padding: 10px;
+    border: 1.5px solid #fcaf2d;
+}
+
+.sp {
+    padding: 0px;
+    padding-left: 10px;
 }

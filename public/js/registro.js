@@ -7,6 +7,16 @@ window.onpageshow = function(event) {
 const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://mined-project-production.up.railway.app/api/'
 const miFormulario = document.querySelector('form')
 
+document.getElementById("correo").addEventListener("input", function() {
+    var correo = this.value;
+    var regex = /^[^@]+@clases\.edu\.sv$/;
+    if (!regex.test(correo)) {
+        this.setCustomValidity("Ingresa un correo con el dominio @clases.edu.sv");
+    } else {
+        this.setCustomValidity("");
+    }
+});
+
 miFormulario.addEventListener('submit', ev => {
     ev.preventDefault()
     $("#errorAlert").prop("hidden", true).html('')

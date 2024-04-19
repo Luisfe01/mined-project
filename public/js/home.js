@@ -10,7 +10,7 @@ let usuario = null;
 // Referencias HTML
 const txtUser = $('#txtuser');
 const container = $('#maincontainer');
-
+let evaluaciones = [];
 
 // Validar el token del localStorage 
 const validarJWT = async() => {
@@ -85,8 +85,14 @@ const renderTest = async(docente) => {
         let select_test = ''
         tests.forEach(test => {
             select_test = `<option value="${test.id}" ${test.id === 1 ? 'selected' : '' }>${test.test_name}</option>`
-            $(`#select-test-${html_id}`).append(select_test)
+            $(`#select-test-${html_id}`).append(select_test);
+            if (test.id !== 1) {
+                evaluaciones.push(test.id);
+            }
         });
+        if (cargo.grado == 1) {
+            $(`#select-test-${html_id}`).html(`<option value="1ro" selected}>Evaluacion 1er grado</option>`).selectpicker('refresh')
+        }
         $(`#select-test-${html_id}`).selectpicker('refresh')
         
 
@@ -107,58 +113,77 @@ const renderTest = async(docente) => {
 const iniciar = (id, docente_id) => {
 
     const alumno_id = $(`#select-alumnos-${id}`).val()
-    const test_id = $(`#select-test-${id}`).val()
+    let test_id = $(`#select-test-${id}`).val()
 
-    const data = {
-        alumno_id,
-        test_id,
-        docente_id,
-        resultado: "N",
-        estado: "A"
+    if (test_id == "1ro") {
+        test_id = evaluaciones;
+    } else {
+        test_id = [test_id];
     }
 
-    if (data.alumno_id == '' || data.test_id == '' || data.alumno_id === undefined) {
-        const msg = data.alumno_id == '' ? "un alumno" : "una evaluacion";
-        Swal.fire({
-            title: 'Error',
-            text: `Seleccione ${msg} para poder continuar`,
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        })
-        return;
-    }
+    test_id.forEach(id => {
+        
+        const data = {
+            alumno_id,
+            test_id: id,
+            docente_id,
+            resultado: "N",
+            estado: "A"
+        }
 
-    fetch(url+`evaluaciones`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {'Content-Type': 'application/json',"x-token": localStorage.getItem('token')}
-    })
-    .then( resp => resp.json())
-    .then( ({errors, evaluacione}) => {
-        if (errors) {
-            let errores = '';
-            errors.forEach(element => {
-                errores += `<li class="list-group-item">${element.msg}</li>`
-                
-            });
+        if (data.alumno_id == '' || data.test_id == '' || data.alumno_id === undefined) {
+            const msg = data.alumno_id == '' ? "un alumno" : "una evaluacion";
             Swal.fire({
-                title: "Errores",
-                icon: "info",
-                html: `
-                    <ul class="list-group">
-                        ${errores}
-                    </ul>
-                `,
-                focusConfirm: false
-            });
-            
+                title: 'Error',
+                text: `Seleccione ${msg} para poder continuar`,
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            })
             return;
         }
-        window.location = 'evaluacion.html?test='+evaluacione.id
-    })
-    .catch( err => {
-        console.log(err);
-    })
+
+        fetch(url+`evaluaciones`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json',"x-token": localStorage.getItem('token')}
+        })
+        .then( resp => resp.json())
+        .then( ({errors, evaluacione}) => {
+            if (errors) {
+                let errores = '';
+                errors.forEach(element => {
+                    errores += `<li class="list-group-item">${element.msg}</li>`
+                    
+                });
+                Swal.fire({
+                    title: "Errores",
+                    icon: "info",
+                    html: `
+                        <ul class="list-group">
+                            ${errores}
+                        </ul>
+                    `,
+                    focusConfirm: false
+                });
+                if (errors[0].msg == "El alumno ya ha sido evaluado" && id == 1) {
+                    return;
+                }
+            }
+
+            if (id == 1) {
+                console.log("aver");
+                window.location = 'evaluacion.html?test='+evaluacione.id
+            }
+            return;
+        })
+        .catch( err => {
+            console.log(err);
+        })
+
+    });
+    if (test_id.length > 1) {
+        window.location = 'evaluacion2.html?alumno='+alumno_id
+    }
 }
 
 const salir = () => {
