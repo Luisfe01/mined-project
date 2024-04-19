@@ -52,6 +52,14 @@ const loadInfo = async(docente) => {
         return;
     }
 
+    if (eva.length == 10) {
+        let temp = eva[9];
+        for (let i = 9; i > 3; i--) {
+            eva[i] = eva[i - 1];
+        }
+        eva[3] = temp;
+    }
+
     ids_eva = eva.map(ev => ev.id);
     $("#alumno_name").html(`<span>${eva[0].alumno} - Edad: ${eva[0].years} años</span>`)
 
