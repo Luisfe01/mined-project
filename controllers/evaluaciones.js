@@ -27,7 +27,7 @@ const evaluacionesGet = async (req, res = response) => {
 const evaluacionesResultGet = async (req, res = response) => {
     const { test_id, grado_id, seccion_id, institucion_id } = req.query
     console.log(test_id);
-    const evaluaciones = await Evaluacione.sequelize.query("select e.id, a.nie, a.genero, CONCAT(a.nombres, ' ', a.apellidos) AS alumno, a.fecha_nacimiento, CONCAT(a.grado_id, ' \"', sc.seccion,'\"') AS grado, e.resultado, e.createdAt from evaluaciones e INNER JOIN tests t ON e.test_id = t.id INNER JOIN alumnos a ON a.id = e.alumno_id INNER JOIN secciones sc ON sc.id = a.seccion_id WHERE a.grado_id = :grado_id AND a.seccion_id = :seccion_id AND test_id = :test_id AND e.Estado != 'A' AND a.institucion_id = :institucion_id", {
+    const evaluaciones = await Evaluacione.sequelize.query("select e.id, a.nie, a.genero, CONCAT(a.nombres, ' ', a.apellidos) AS alumno, a.fecha_nacimiento, CONCAT(a.grado_id, ' \"', sc.seccion,'\"') AS grado, e.resultado, e.createdAt, t.test_name from evaluaciones e INNER JOIN tests t ON e.test_id = t.id INNER JOIN alumnos a ON a.id = e.alumno_id INNER JOIN secciones sc ON sc.id = a.seccion_id WHERE e.Estado != 'A' AND a.id = :test_id", {
         replacements: { grado_id, seccion_id, test_id, institucion_id },
         type: QueryTypes.SELECT
     })
@@ -36,6 +36,14 @@ const evaluacionesResultGet = async (req, res = response) => {
         return res.status(404).json({
             errors: [{ msg: "No se encontraron datos" }]
         })
+    }
+
+    if (evaluaciones.length == 10) {
+        let temp = evaluaciones[9];
+        for (let i = 9; i > 3; i--) {
+            evaluaciones[i] = evaluaciones[i - 1];
+        }
+        evaluaciones[3] = temp;
     }
 
     const arrRest = []
@@ -78,15 +86,17 @@ const evaluacionesResultGet = async (req, res = response) => {
 
 const pdf = async (req, res = response) => {
 
-    const { test_id = 1, grado_id = 6, seccion_id = 1, institucion_id } = req.query
+    const { alumno = 1, grado_id = 6, seccion_id = 1, institucion_id } = req.query
 
     const [evaluaciones, insti] = await Promise.all([
-        await Evaluacione.sequelize.query("select e.id, a.nie, a.genero, CONCAT(a.nombres, ' ', a.apellidos) AS alumno, a.fecha_nacimiento, CONCAT(a.grado_id, ' \"', sc.seccion,'\"') AS grado, e.resultado, e.createdAt from evaluaciones e INNER JOIN tests t ON e.test_id = t.id INNER JOIN alumnos a ON a.id = e.alumno_id INNER JOIN secciones sc ON sc.id = a.seccion_id WHERE a.grado_id = :grado_id AND a.seccion_id = :seccion_id AND test_id = :test_id AND e.Estado != 'A' AND a.institucion_id = :institucion_id", {
-            replacements: { grado_id, seccion_id, test_id, institucion_id },
+        await Evaluacione.sequelize.query("select e.id, a.nie, a.genero, CONCAT(a.nombres, ' ', a.apellidos) AS alumno, a.fecha_nacimiento, CONCAT(a.grado_id, ' \"', sc.seccion,'\"') AS grado, e.resultado, e.createdAt, t.test_name from evaluaciones e INNER JOIN tests t ON e.test_id = t.id INNER JOIN alumnos a ON a.id = e.alumno_id INNER JOIN secciones sc ON sc.id = a.seccion_id WHERE e.Estado != 'A' AND a.id = :alumno ORDER BY t.id ASC", {
+            replacements: { grado_id, seccion_id, alumno, institucion_id },
             type: QueryTypes.SELECT
         }),
         await Institucione.findByPk(institucion_id)
     ])
+
+    
 
     if (evaluaciones.length < 1) {
         return res.status(404).send(`
@@ -103,58 +113,20 @@ const pdf = async (req, res = response) => {
         `)
     }
 
-    const arrRest = []
-    for (const evaluacion of evaluaciones) {
-        const diff = new Date(evaluacion.createdAt).getTime() - new Date(evaluacion.fecha_nacimiento).getTime()
-        const years = (diff / (1000 * 60 * 60 * 24)) / 365;
-        evaluacion.years = parseInt(years, 10);
-
-        let observaciones = '';
-        const detalles = await Evaluacione.sequelize.query("SELECT ev.respuesta, ev.observaciones, td.question FROM evaluacion_details ev INNER JOIN tests_details td ON td.id = ev.test_detail_id WHERE ev.evaluacion_id = :id ORDER BY td.id ASC", {
-            replacements: { id: evaluacion.id },
-            type: QueryTypes.SELECT
-        })
-
-        const evaluacionConNuevaPropiedad = { ...evaluacion, detalles: [] };
-
-        let total = 0
-
-        detalles.forEach(detalle => {
-            observaciones += detalle.observaciones != '' ? detalle.observaciones + ", " : ''
-            const nombre = detalle.question.split('+')[0];
-            evaluacionConNuevaPropiedad.detalles.push({ respuesta: detalle.respuesta, nombre, tamaño: (372/detalles.length) })
-            evaluacionConNuevaPropiedad.observaciones = observaciones
-            if (detalle.respuesta === 1) {
-                total++
-            }
-        });
-
-        
-        if (grado_id > 2) {
-            evaluacionConNuevaPropiedad.detalles.splice(0, 0, evaluacionConNuevaPropiedad.detalles.splice(2, 1)[0])
-            evaluacionConNuevaPropiedad.detalles.splice(1, 0, evaluacionConNuevaPropiedad.detalles.splice(2, 1)[0])
+    if (evaluaciones.length == 10) {
+        let temp = evaluaciones[9];
+        for (let i = 9; i > 3; i--) {
+            evaluaciones[i] = evaluaciones[i - 1];
         }
-
-        console.log(evaluacionConNuevaPropiedad.detalles);
-        if (detalles.length > 6) {
-            evaluacionConNuevaPropiedad.detalles = [{respuesta: total+' de '+detalles.length, nombre: 'Total de respuestas correctas', tamaño: 372}]
-        }
-        arrRest.push(evaluacionConNuevaPropiedad)
+        evaluaciones[3] = temp;
     }
 
-    const columnasDetalles = arrRest.reduce((columnas, evaluacion) => {
-        evaluacion.detalles.forEach(detalle => {
-            if (!columnas.includes(detalle.nombre)) {
-                columnas.push(detalle.nombre);
-            }
-        });
-        return columnas;
-    }, []);
-
+    let doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
     const tarl = grado_id > 2 ? '3.°- 6.' : grado_id;
 
+    const diff = new Date(evaluaciones[0].createdAt).getTime() - new Date(evaluaciones[0].fecha_nacimiento).getTime()
+    const years = (diff / (1000 * 60 * 60 * 24)) / 365;
 
-    let doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
     doc.font('Helvetica-Bold').text('HOJA DE REGISTRO DE LECTOESCRITURA', {
         align: 'center'
     })
@@ -168,7 +140,7 @@ const pdf = async (req, res = response) => {
         continued:true
     })
     .font('Helvetica-Bold')
-    .text(arrRest[0].grado, {
+    .text(evaluaciones[0].grado, {
         width: 1000,
         continued:true
     })
@@ -178,7 +150,7 @@ const pdf = async (req, res = response) => {
         width: 1000,
     })
     .font('Helvetica-Bold')
-    .text(arrRest[0].createdAt.toLocaleString('es-MX').split(',')[0], {
+    .text(evaluaciones[0].createdAt.toLocaleString('es-MX').split(',')[0], {
         width: 465,
     })
 
@@ -201,65 +173,142 @@ const pdf = async (req, res = response) => {
         width: 465,
     })
 
+    doc
+    .font('Helvetica')
+    .text('ALUMNO: ', {
+        continued:true
+    })
+    .font('Helvetica-Bold')
+    .text(evaluaciones[0].alumno, {
+        width: 465,
+        continued:true
+    })
+    .font('Helvetica')
+    .text('    Genero: ', {
+        continued:true
+    })
+    .font('Helvetica-Bold')
+    .text(evaluaciones[0].genero, {
+        width: 465,
+        continued:true
+    })
+    .font('Helvetica')
+    .text('    Edad: ', {
+        continued:true
+    })
+    .font('Helvetica-Bold')
+    .text(parseInt(years, 10), {
+        width: 465,
+    })
 
-    doc.text(' ')
-    const table = {
-        // title: "Grado y seccion:",
+    for (const evaluacion of evaluaciones) {
+        const espacioDisponible = doc.page.height - doc.y - 100;
+        const arrRest = []
+        const diff = new Date(evaluacion.createdAt).getTime() - new Date(evaluacion.fecha_nacimiento).getTime()
+        const years = (diff / (1000 * 60 * 60 * 24)) / 365;
+        evaluacion.years = parseInt(years, 10);
 
-        // subtitle: "Escuela:",
+        let observaciones = '';
+        const detalles = await Evaluacione.sequelize.query("SELECT ev.respuesta, ev.observaciones, td.question FROM evaluacion_details ev INNER JOIN tests_details td ON td.id = ev.test_detail_id WHERE ev.evaluacion_id = :id ORDER BY td.id ASC", {
+            replacements: { id: evaluacion.id },
+            type: QueryTypes.SELECT
+        })
+
+        const evaluacionConNuevaPropiedad = { ...evaluacion, detalles: [] };
+
+        let total = 0
+
+        detalles.forEach(detalle => {
+            observaciones += detalle.observaciones != '' ? detalle.observaciones + ", " : ''
+            const nombre = detalle.question.split('+')[0];
+            evaluacionConNuevaPropiedad.detalles.push({ respuesta: detalle.respuesta, nombre, tamaño: (632/detalles.length) })
+            evaluacionConNuevaPropiedad.observaciones = observaciones
+            if (detalle.respuesta === 1) {
+                total++
+            }
+        });
+
         
-        headers: [
-            {
-                label: "No.", width: 20, property:'years',
-                renderer: (value, indexColumn, indexRow, row, rectRow, rectCell) => { return indexRow+1 },
-                
-            },
-            { label: "Nombre de la niña o niño participante", property: 'alumno', width: 150, renderer: null },
-            { label: "Genero", property: 'genero', align: 'center', width: 30, renderer: null },
-            { label: "Edad", property: 'years', align: 'center', width: 30, renderer: null },
-            { label: "Grado", property: 'grado', align: 'center', width: 30, renderer: null },
-            ...columnasDetalles.map(nombre => ({
-                
-                label: `${nombre}`,
-                width: arrRest[0].detalles[0].tamaño,
-                property: 'detalles',
-                align: 'center',
-                renderer: (value, indexColumn, indexRow, row, rectRow, rectCell) => {
-                    
-                        const detalleEncontrado = arrRest[indexRow].detalles.find(detalle => detalle.nombre === nombre);
-                        return detalleEncontrado ? detalleEncontrado.respuesta : null;
-                    
-                }
-            })),
-            { label: "Resultado", property: 'resultado', align: 'center', width: 65, renderer: null },
-            { label: "Observaciones", property: 'observaciones', align: 'center', width: 100, renderer: null },
-        ],
-        
-        // simeple data
-        datas: arrRest,
-    };
-    // the magic
-    doc.table(table, {
-        options: {
-            // divider lines
-            divider: {
-              header: {disabled: true, width: 0.5, opacity: 0.5},
-              horizontal: {disabled: true, width: 0.5, opacity: 0.5},
-            },
-          },
-        padding:1,
-        prepareHeader: () => doc.font("Helvetica-Bold").fontSize(8),
-        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-            doc.font("Helvetica").fontSize(8).fillColor('#292929')
+        if (grado_id > 2) {
+            evaluacionConNuevaPropiedad.detalles.splice(0, 0, evaluacionConNuevaPropiedad.detalles.splice(2, 1)[0])
+            evaluacionConNuevaPropiedad.detalles.splice(1, 0, evaluacionConNuevaPropiedad.detalles.splice(2, 1)[0])
         }
+
+        console.log(evaluacionConNuevaPropiedad.detalles);
+        if (detalles.length > 12) {
+            evaluacionConNuevaPropiedad.detalles = [{respuesta: total+' de '+detalles.length, nombre: 'Total de respuestas correctas', tamaño: 632}]
+        }
+        arrRest.push(evaluacionConNuevaPropiedad)
+    
+
+        const columnasDetalles = arrRest.reduce((columnas, evaluacion) => {
+            evaluacion.detalles.forEach(detalle => {
+                if (!columnas.includes(detalle.nombre)) {
+                    columnas.push(detalle.nombre);
+                }
+            });
+            return columnas;
+        }, []);
+
+    
+
+
+        // doc.text(' ')
+        const table = {
+            title: evaluacion.test_name,
+
+            // subtitle: "Escuela:",
+            
+            headers: [
+                
+                ...columnasDetalles.map(nombre => ({
+                    
+                    label: `${nombre}`,
+                    width: arrRest[0].detalles[0].tamaño,
+                    property: 'detalles',
+                    align: 'center',
+                    renderer: (value, indexColumn, indexRow, row, rectRow, rectCell) => {
+                        
+                            const detalleEncontrado = arrRest[indexRow].detalles.find(detalle => detalle.nombre === nombre);
+                            return detalleEncontrado ? detalleEncontrado.respuesta : null;
+                        
+                    }
+                })),
+                { label: "Resultado", property: 'resultado', align: 'center', width: 65, renderer: null },
+                { label: "Observaciones", property: 'observaciones', align: 'center', width: 100, renderer: null },
+            ],
+            
+            // simeple data
+            datas: arrRest,
+        };
+        // the magic
+        doc.table(table, {
+            options: {
+                // divider lines
+                divider: {
+                header: {disabled: true, width: 0.5, opacity: 0.5},
+                horizontal: {disabled: true, width: 0.5, opacity: 0.5},
+                },
+            },
+            padding:1,
+            prepareHeader: () => doc.font("Helvetica-Bold").fontSize(8),
+            prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                doc.font("Helvetica").fontSize(8).fillColor('#292929')
+            }
+            
+        });
         
-    });
+        doc.moveDown();
+        // doc.text(espacioDisponible)
+        if (espacioDisponible < 100) {
+            doc.addPage()
+        }
+    }
 
     //Mandamos la respuesta
     doc.pipe(res);
     // done!
     doc.end();
-
 
 }
 

@@ -445,6 +445,9 @@ const markResult = (id) => {
 }
 
 const handleChange = (radio) => {
+
+    const name = $(radio).attr('name');
+    $(`input[name=${name}]`).attr("disabled", true)
     
     const valor = $(radio).val()
     const nivel = String($(radio).data("nivel"))

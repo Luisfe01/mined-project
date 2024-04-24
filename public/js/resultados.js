@@ -58,22 +58,24 @@ const cargarDatos = async (docente) => {
 
 $("#grado").change(async () => {
     const id = $("#grado").val()
-    const resp = await fetch(url + 'tests?grado=' + id, {
-        headers: { "x-token": 'token' }
+    const seccion = $("#grado").find(':selected').data('id');
+    const resp = await fetch(url + 'alumnos?grado=' + id+'&seccion='+seccion+'&institucion='+user.institucion_id, {
+        headers: { "x-token": localStorage.getItem('token') }
     });
-    const { tests } = await resp.json();
+    const { alumnos } = await resp.json();
+    
     $("#evaluacion").html('').selectpicker("refresh");
     let select_test = ''
-    tests.forEach(test => {
-        select_test = `<option value="${test.id}" ${test.id === 1 ? 'selected' : '' }>${test.test_name}</option>`
+    alumnos.forEach(test => {
+        select_test = `<option value="${test.id}">${test.nombres} ${test.apellidos}</option>`
         $("#evaluacion").append(select_test)
     });
-    $("#evaluacion").selectpicker({ title: 'Seleccione una evaluacion' }).selectpicker('refresh')
+    $("#evaluacion").selectpicker({ title: 'Seleccione un alumno' }).selectpicker('refresh')
 
-    if (tests[0].id === 1) {
-        $("button[name=btn-resultados]").prop("disabled", false);
-        $("button[name=btn-pdf]").prop("disabled", false);
-    }
+    // if (tests[0].id === 1) {
+    //     $("button[name=btn-resultados]").prop("disabled", false);
+    //     $("button[name=btn-pdf]").prop("disabled", false);
+    // }
 })
 
 $("#evaluacion").change(() => {
@@ -99,7 +101,7 @@ $("button[name=btn-resultados]").click(() => {
 })
 
 const getQuery = () => {
-    return { test_id: $("#evaluacion").val(), grado_id: $("#grado").val(), seccion_id: $("#grado").find(':selected').data('id'), institucion_id: user.institucion_id }
+    return { alumno: $("#evaluacion").val(), grado_id: $("#grado").val(), seccion_id: $("#grado").find(':selected').data('id'), institucion_id: user.institucion_id }
 }
 
 $("button[name=btn-pdf]").click(() => {
@@ -160,14 +162,15 @@ const obtenerResultados = async (query) => {
             }, title: 'Genero' },
             { data: 'years', title: 'Edad' },
             { data: 'grado', title: 'Grado' },
-            // Agrega las columnas dinámicamente desde "detalles"
-            ...columnasDetalles.map(nombre => ({
-                data: function (row) {
-                    const detalleEncontrado = row.detalles.find(detalle => detalle.nombre === nombre);
-                    return detalleEncontrado ? detalleEncontrado.respuesta : null;
-                },
-                title: `${nombre}`
-            })),
+            { data: 'test_name', title: 'Evaluacion' },
+            // // Agrega las columnas dinámicamente desde "detalles"
+            // ...columnasDetalles.map(nombre => ({
+            //     data: function (row) {
+            //         const detalleEncontrado = row.detalles.find(detalle => detalle.nombre === nombre);
+            //         return detalleEncontrado ? detalleEncontrado.respuesta : null;
+            //     },
+            //     title: `${nombre}`
+            // })),
             { data: 'resultado', title: 'Resultado' },
             // Agrega columnas adicionales según tus necesidades
             { data: 'observaciones', title: 'Observaciones' },

@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { cargosGet } = require('../controllers/cargos');
+const { cargosGet, cargoDelete } = require('../controllers/cargos');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { check } = require('express-validator');
 
@@ -18,7 +18,7 @@ router.get('/:id', [
 //     validarCampos
 // ], docentePost);
 
-// router.delete('/', docentesDelete);
+router.delete('/:id', cargoDelete);
 
 // router.patch('/', docentesPatch);
 

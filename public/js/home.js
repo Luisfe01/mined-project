@@ -55,7 +55,10 @@ const renderTest = async(docente) => {
             <div class="card shadow mb-3">
                 <a href="#${html_id}" class="d-block card-header py-3 collapsed" data-toggle="collapse"
                     role="button" aria-expanded="false" aria-controls="${html_id}">
-                    <h6 class="m-0 font-weight-bold text-secondary">Grado: ${cargo.grado} "${cargo.seccion}"</h6>
+                    <div class="row">
+                        <button class="m-0 btn btn-sm mr-1" onclick="remove(${cargo.id})"><i class="fas fa-times text-danger"></i></button>
+                        <h6 class="mt-2 font-weight-bold text-secondary">Grado: ${cargo.grado} "${cargo.seccion}"</h6>
+                    </div>
                 </a>
                 <div class="collapse" id="${html_id}">
                     <div class="card-body" id="body-${html_id}">
@@ -246,6 +249,51 @@ const cargarAlumnos = async (id, grado_id, seccion_id, test) => {
     $(`#select-alumnos-${id}`).selectpicker({ title: 'Seleccione un alumno' }).selectpicker('refresh')
 }
 
+const remove = async (id) => {
+    Swal.fire({
+        title: "Estas seguro?",
+        text: "Se eliminara el grado seleccionado!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancelar",
+        confirmButtonText: "Eliminar!"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+
+            try {
+                const response = await fetch(url + 'cargos/'+id, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json', "x-token": localStorage.getItem('token') }
+                })
+                if (!response.ok) {
+                    err = await response.json();
+                    Swal.fire({
+                        title: "Error!",
+                        text: err.errors[0].msg,
+                        icon: "error"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Eliminado!",
+                        text: "El grado ha sido eliminado",
+                        icon: "success"
+                    });
+
+                    renderTest(usuario)
+
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: "Error!",
+                    text: error.errors[0].msg,
+                    icon: "error"
+                });
+            }
+        }
+    });
+}
 
 const main = async () => {
     // Validar JWT
