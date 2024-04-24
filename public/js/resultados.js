@@ -66,10 +66,16 @@ $("#grado").change(async () => {
     
     $("#evaluacion").html('').selectpicker("refresh");
     let select_test = ''
+    let ids = [];
     alumnos.forEach(test => {
+        ids.push(test.id);
         select_test = `<option value="${test.id}">${test.nombres} ${test.apellidos}</option>`
         $("#evaluacion").append(select_test)
     });
+    if (id > 1) {
+        select_test = `<option value="${ids.join(',')}">Todos los alumnos</option>`
+        $("#evaluacion").prepend(select_test);
+    }
     $("#evaluacion").selectpicker({ title: 'Seleccione un alumno' }).selectpicker('refresh')
 
     // if (tests[0].id === 1) {
@@ -107,7 +113,8 @@ const getQuery = () => {
 $("button[name=btn-pdf]").click(() => {
     // 
 
-    window.open(url + 'evaluaciones/resultados/pdf?' + new URLSearchParams(getQuery()));
+    const grado = $("#grado").val() > 1 ? '2' : '';
+    window.open(url + 'evaluaciones/resultados/pdf'+ grado +'?' + new URLSearchParams(getQuery()));
 })
 
 const obtenerResultados = async (query) => {
@@ -118,7 +125,19 @@ const obtenerResultados = async (query) => {
     const { errors, result } = await resp.json();
     // Tu array de objetos
     const datos = result;
+    if ($("#grado").val() == 1) {
+        datos.forEach((element, i) => {
+            if (i != 0) {
+                datos[i].nie = '';
+                datos[i].alumno = '';
+                datos[i].genero = '';
+                datos[i].years = '';
+                datos[i].grado = '';
+            }
+        });
+    }
 
+    console.log(datos);
     if ($.fn.DataTable.isDataTable('#miTabla')) {
         table.destroy();
         table.clear()
@@ -150,6 +169,7 @@ const obtenerResultados = async (query) => {
 
     // Configuración de DataTables
     table = $("#miTabla").DataTable({
+        ordering: false,
         language: {
             url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'  // Ruta del archivo de traducción en español
         },
@@ -158,7 +178,7 @@ const obtenerResultados = async (query) => {
             { data: 'nie', title: 'NIE' },
             { data: 'alumno', title: 'Alumno' },
             { data: 'genero', render : (data) => {
-                return data === 'F' ? 'Femenino' : 'Masculino'
+                return data === '' ? '' : data === 'F' ? 'Femenino' : 'Masculino'
             }, title: 'Genero' },
             { data: 'years', title: 'Edad' },
             { data: 'grado', title: 'Grado' },
