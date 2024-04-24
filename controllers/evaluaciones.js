@@ -200,6 +200,7 @@ const pdf = async (req, res = response) => {
     .text(parseInt(years, 10), {
         width: 465,
     })
+    doc.text(' ')
 
     for (const evaluacion of evaluaciones) {
         const espacioDisponible = doc.page.height - doc.y - 100;

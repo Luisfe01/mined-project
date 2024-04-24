@@ -90,7 +90,7 @@ $("button[name=btn-resultados]").click(() => {
     if (data.test_id === '') {
         Swal.fire({
             title: 'Error',
-            text: `Seleccione una evaluacion para poder continuar`,
+            text: `Seleccione un alumno para poder continuar`,
             icon: 'error',
             confirmButtonText: 'Aceptar'
         })
