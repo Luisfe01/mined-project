@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Cargar resultados</title>
+    <title>Informes</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -63,17 +63,18 @@
                     <span>Resultados</span></a>
             </li>
 
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="carga.html">
                     <i class="fas fa-fw fa-database"></i>
                     <span>Cargar resultados</span></a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="informes.html">
                     <i class="fas fa-fw fa-chart-pie"></i>
                     <span>Informes</span></a>
             </li>
+
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -121,44 +122,15 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid h-100">
 
                     <!-- Page Heading -->
-                    <div class="card shadow mb-4">
+                    <div class="card shadow mb-4 h-100">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Resultados</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Informes</h6>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 mb-2">
-                                    <span>Grado: </span>
-                                    <select id="grado" class="selectpicker form-control"
-                                        name="grado" title="Seleccione grado y seccion">
-                                        
-                                    </select>
-                                </div>
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 mb-2">
-                                    <span>Evaluacion: </span>
-                                    <select id="evaluacion" class="selectpicker form-control"
-                                        name="evaluacion" title="Seleccione grado y seccion">
-                                       
-                                    </select>
-                                </div>
-
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-1 d-flex align-items-end mb-2">
-                                    <button class="btn btn-block btn-primary" name="btn-resultados" disabled><i
-                                            class="fas fa-search"></i></button>
-                                </div>
-                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-1 d-flex align-items-end mb-2">
-                                    <button class="btn btn-block btn-primary" name="btn-cargar" href="#" data-toggle="modal" data-target="#datosModal"><i
-                                            class="fas fa-plus"></i></button>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-bordered display" id="miTabla" width="100%" cellspacing="0">
-                                    
-                                </table>
-                            </div>
+                            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/42bf36ea-b714-4afe-bb77-6ba3f827b81e/page/9EWoD" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                         </div>
                     </div>
 
@@ -209,50 +181,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="datosModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Registrar resultados</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="form-group row d-sm-flex">
-                            <input type="hidden" class="form-control form-control-user" id="iduser">
-                            
-                            <div class="col-sm-12 mb-3">
-                                <select name="gradoNuevo" id="gradoNuevo" class="form-control selectpicker grado" title="Seleccione un grado">
-                                </select>
-                            </div>
-                            <div class="col-sm-12 mb-3">
-                                <select name="evaluacionNuevo" id="evaluacionNuevo" class="form-control selectpicker grado" title="Seleccione una evaluacion">
-                                </select>
-                            </div>
-                            <div class="col-sm-12 mb-3">
-                                <select name="resultado" id="resultado" class="form-control selectpicker" title="Seleccione un resultado">
-                                </select>
-                            </div>
-                            <div class="col-sm-12 mb-3">
-                                <input type="number" min="0" class="form-control form-control-user" id="cantidad"
-                                    placeholder="Cantidad">
-                            </div>
-
-                        </div>
-                        <div class="alert alert-danger" id="errorAlert" hidden="true"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" id="btn-registro" onclick="registrar()">Registrar</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -263,19 +191,8 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <script src="vendor/swal/swal.js"></script>
-
-    <script src="vendor/selectpicker/bootstrap-select.min.js"></script>
-    <!-- <script src="js/home.js"></script> -->
-
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
     <!-- Page level custom scripts -->
-    <script src="js/carga.js"></script>
+    <script src="js/informes.js"></script>
 
 </body>
 
