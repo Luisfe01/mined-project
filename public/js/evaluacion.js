@@ -318,7 +318,7 @@ const loadInfo = async(docente) => {
     });
 
     $("#cardBody").html(main_content)
-    $("#btnFinalizar").html(`<button class="btn btn-danger" onclick="calificar('${test}', '${ids_detalles}', '${info.grado_id}')">Finalizar</button>`)
+    $("#btnFinalizar").html(`<button class="btn btn-danger" id="fin" onclick="calificar('${test}', '${ids_detalles}', '${info.grado_id}')" disabled>Finalizar</button>`)
 
     return;
 }
@@ -455,7 +455,8 @@ const handleChange = (radio) => {
     if (nivel == 0 && orden == 0) {
        
         let target = $(radio).parent().parent().parent().next()
-
+        
+        $("#fin").attr("disabled", false);
         if (target.length === 0) {
             target = $('#page-top')
         }
@@ -483,9 +484,13 @@ const handleChange = (radio) => {
         $("#MCP"+orden).removeAttr('hidden')
         $("#MCP"+orden).get(0).scrollIntoView({behavior: 'smooth'})
     } else {
-        $("#MCP"+ids[0]).removeAttr('hidden')
-        $("#MCP"+ids[0]).get(0).scrollIntoView({behavior: 'smooth'})
-    }
+        try {
+            $("#MCP"+ids[0]).removeAttr('hidden')
+            $("#MCP"+ids[0]).get(0).scrollIntoView({behavior: 'smooth'})
+        } catch (error) {
+            $("#fin").attr("disabled", false);
+        }
+    }    
 }
 
 const main = async () => {

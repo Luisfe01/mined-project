@@ -49,6 +49,8 @@ const renderTest = async(docente) => {
 
     cargos.forEach(async(cargo) => {
         const html_id = cargo.seccion+cargo.grado;
+        
+        let ruta = cargo.grado == 1 ? '1ro.pdf' : cargo.grado == 2 ? '2do.pdf' : '3-6.pdf';
 
         html += `
         <div class="col-6 mb-3">
@@ -62,7 +64,8 @@ const renderTest = async(docente) => {
                 </a>
                 <div class="collapse" id="${html_id}">
                     <div class="card-body" id="body-${html_id}">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
+                            
                             <div class="col-lg-4 mb-2">
                                 <select class="form-control selectpicker select-test-${html_id} sle" id="select-test-${html_id}" data-id="${html_id}" data-grado="${cargo.grado_id}" data-seccion="${cargo.seccion_id}" data-live-search="true" title="Seleccione la evaluacion">
                                 </select>
@@ -73,6 +76,15 @@ const renderTest = async(docente) => {
                             </div>
                             <div class="col-lg-3 mb-2">
                                 <button class="btn btn-primary btn-block" id="btn${html_id}" onClick="iniciar('${html_id}','${docente.id}')">Iniciar</button>
+                            </div>
+
+                            <div class="col-12">
+                                
+                            </div> 
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-3">
+                                <a class="btn btn-danger btn-block" href="pdf/${ruta}" target="_blank">Manual <i class="fas fa-file-pdf"></i></a>
                             </div>
                         </div>
                     </div>

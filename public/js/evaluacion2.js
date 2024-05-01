@@ -3,6 +3,7 @@ window.onpageshow = function(event) {
         window.location.reload();
     }
 };
+const arrResp = [];
 
 const url = (window.location.hostname.includes('localhost')) ? 'http://localhost:8080/api/' : 'https://mined-project-production.up.railway.app/api/'
 let ids_q = [];
@@ -27,7 +28,6 @@ const validarJWT = async() => {
     
     loadInfo()
 }
-
 
 const loadInfo = async(docente) => {
     const queryString = window.location.search;
@@ -65,7 +65,7 @@ const loadInfo = async(docente) => {
 
     $("#test_name").html(`<span>Evaluacion 1er Grado</span>`)
 
-    $("#btnFinalizar").html(`<button class="btn btn-danger" onclick="calificar('${ids_eva.join()}')">Finalizar</button>`)
+    $("#btnFinalizar").html(`<button class="btn btn-danger" id="fin" onclick="calificar('${ids_eva.join()}')" disabled>Finalizar</button>`)
     
     for (const eva_id of eva) {
     
@@ -216,7 +216,6 @@ const loadInfo = async(docente) => {
     
 }
 
-
 const contador = (inicio) => {
     
     let StartContador = new Date(inicio);
@@ -241,18 +240,39 @@ const contador = (inicio) => {
     timer = setInterval(timerGO, 1000); 
 }
 
+const validarButton = (resp, total, test) => {
+
+    if (resp / 2 == total) {
+        arrResp[test] = 1;
+    }
+
+    if (arrResp.reduce((a,b) => a + b) === 8) {
+        $("#fin").attr("disabled", false);
+    }
+}
 
 const handleChange = (total, test) => {
 
     let preguntas = document.getElementById("Q"+test).getElementsByTagName("input");
     let contadorCorrectas = 0;
+    let contadorResp = 0;
 
     for (let i = 0; i < preguntas.length; i++) {
+        
         if (preguntas[i].type !== "text" && preguntas[i].checked && preguntas[i].value === "1") {
             contadorCorrectas++;
         }
+
+        if (preguntas[i].type === "radio") {
+            
+            if ($(`input[name=${preguntas[i].name}]`).is(":checked")) {
+                contadorResp++
+            }
+        }
     }
-    
+
+    validarButton(contadorResp, total, test);
+
     if ((total % 2 == 1 && contadorCorrectas >= Math.ceil(total * 0.5)) || (total % 2 == 0 && contadorCorrectas > Math.ceil(total * 0.5))) {
         result = "Aceptable";
     } else {
@@ -261,8 +281,6 @@ const handleChange = (total, test) => {
 
     $("#R"+test).html(result)
     $("#T"+test).html(contadorCorrectas)
-
-    console.log(ids_q[3]);
 }
 
 
