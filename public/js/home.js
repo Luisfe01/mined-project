@@ -84,7 +84,7 @@ const renderTest = async(docente) => {
                         </div>
                         <div class="row justify-content-end">
                             <div class="col-3">
-                                <a class="btn btn-danger btn-block" href="pdf/${ruta}" target="_blank">Manual <i class="fas fa-file-pdf"></i></a>
+                                <a class="btn btn-danger btn-block" href="pdf/${ruta}" target="_blank">Instucciones <i class="fas fa-file-pdf"></i></a>
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@ const renderTest = async(docente) => {
         $(`#select-test-${html_id}`).selectpicker('refresh')
         
 
-        $(`#select-alumnos-${html_id}`).selectpicker({ title: 'Seleccione una evaluacion' }).selectpicker('refresh')
+        $(`#select-alumnos-${html_id}`).selectpicker({ title: 'Seleccione un alumno' }).selectpicker('refresh')
 
         if (cargo.grado_id > 2) {
             cargarAlumnos(html_id, cargo.grado_id, cargo.seccion_id, 1)

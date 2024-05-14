@@ -89,7 +89,6 @@ const obtenerResultados = async (query) => {
         },
         data: datos,
         columns: [
-            { data: 'id', title: 'ID.' },
             { data: 'nie', title: 'NIE' },
             { data: 'nombres', title: 'Nombres' },
             { data: 'apellidos', title: 'Apellidos' },
